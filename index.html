@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head lang="ru">
+    <meta charset="UTF-8">
+    <title>Подсчет факториала</title>
+    <script>
+        function getFactorial(){
+            var number = document.getElementById("number").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", "calc?n=" + number.toString(), false);
+            xmlHttp.send(null);
+            document.getElementById("result").value = xmlHttp.responseText;
+        }
+    </script>
+    <style>
+        #result {
+            width: 600px;
+            height: 450px;
+            overflow: scroll;
+        }
+    </style>
+</head>
+<body>
+    <h1>Посчитать факториал, бесплатно, без смс, без регистрации</h1>
+    Введите число: <input type="number" id="number"> <button onclick="getFactorial()">Посчитать</button><br>
+    Результат:<br>
+    <textarea id="result"></textarea>
+
+</body>
+</html>

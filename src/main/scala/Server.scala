@@ -1,18 +1,17 @@
 import java.net.{URI, InetSocketAddress}
 import com.sun.net.httpserver.{HttpExchange, HttpHandler, HttpServer}
-
+import scala.io.Source
 import scala.annotation.tailrec
+import scala.util.Try
 
 class FactorialHandler extends HttpHandler {
 
   override def handle(httpExchange: HttpExchange): Unit = {
     val params = Util.parseParams(httpExchange.getRequestURI)
-    val response = if (params.contains("n")){
-      Util.factorial(BigInt(params("n"))).toString()
-    }else{
-      "Abacabadabacaba"
+    val response = params.get("n") match {
+      case Some(x) => Try(Util.factorial(BigInt(x)).toString()).getOrElse("Введите число")
+      case _ => "Введите число"
     }
-
     httpExchange.sendResponseHeaders(200, response.length())
     val os = httpExchange.getResponseBody
     os.write(response.getBytes)
@@ -21,11 +20,27 @@ class FactorialHandler extends HttpHandler {
 
 }
 
+class IndexPageHandler extends HttpHandler {
+
+  override def handle(httpExchange: HttpExchange): Unit = {
+    val os = httpExchange.getResponseBody
+    val filename = "index.html"
+    val file = Source.fromFile(filename).mkString
+    httpExchange.sendResponseHeaders(200, file.length)
+    os.write(file.getBytes())
+    os.close()
+  }
+
+}
+
 object Server extends App{
+  System.out.println("Starting server...")
   val server = HttpServer.create(new InetSocketAddress(8089), 0)
-  server.createContext("/", new FactorialHandler)
-  server.setExecutor(null); // creates a default executor
+  server.createContext("/", new IndexPageHandler)
+  server.createContext("/calc", new FactorialHandler)
+  server.setExecutor(null)
   server.start()
+  System.out.println("Server started")
 }
 
 object Util{
@@ -50,4 +65,5 @@ object Util{
     }
     accumulatedFactorial(x, one)
   }
+
 }
