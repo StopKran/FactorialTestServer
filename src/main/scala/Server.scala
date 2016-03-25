@@ -7,7 +7,9 @@ import scala.util.Try
 class FactorialHandler extends HttpHandler {
 
   override def handle(httpExchange: HttpExchange): Unit = {
+    System.out.print("Requesting factorial with params: ")
     val params = Util.parseParams(httpExchange.getRequestURI)
+    System.out.println(params)
     val response = params.get("n") match {
       case Some(x) => Try(Util.factorial(BigInt(x)).toString()).getOrElse("Enter a number")
       case _ => "Enter a number"
@@ -16,6 +18,7 @@ class FactorialHandler extends HttpHandler {
     val os = httpExchange.getResponseBody
     os.write(response.getBytes)
     os.close()
+    System.out.println("Factorial response: " + response)
   }
 
 }
@@ -23,12 +26,14 @@ class FactorialHandler extends HttpHandler {
 class IndexPageHandler extends HttpHandler {
 
   override def handle(httpExchange: HttpExchange): Unit = {
+    System.out.println("Requesting index page")
     val os = httpExchange.getResponseBody
     val filename = "index.html"
     val file = Source.fromFile(filename).mkString
     httpExchange.sendResponseHeaders(200, file.getBytes().length)
     os.write(file.getBytes())
     os.close()
+    System.out.println("Index page response: \n" + file)
   }
 
 }
