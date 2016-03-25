@@ -9,10 +9,10 @@ class FactorialHandler extends HttpHandler {
   override def handle(httpExchange: HttpExchange): Unit = {
     val params = Util.parseParams(httpExchange.getRequestURI)
     val response = params.get("n") match {
-      case Some(x) => Try(Util.factorial(BigInt(x)).toString()).getOrElse("Введите число")
-      case _ => "Введите число"
+      case Some(x) => Try(Util.factorial(BigInt(x)).toString()).getOrElse("Enter a number")
+      case _ => "Enter a number"
     }
-    httpExchange.sendResponseHeaders(200, response.length())
+    httpExchange.sendResponseHeaders(200, response.getBytes().length)
     val os = httpExchange.getResponseBody
     os.write(response.getBytes)
     os.close()
@@ -26,7 +26,7 @@ class IndexPageHandler extends HttpHandler {
     val os = httpExchange.getResponseBody
     val filename = "index.html"
     val file = Source.fromFile(filename).mkString
-    httpExchange.sendResponseHeaders(200, file.length)
+    httpExchange.sendResponseHeaders(200, file.getBytes().length)
     os.write(file.getBytes())
     os.close()
   }
